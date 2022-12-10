@@ -1,6 +1,5 @@
 const Company = require('../models/company')
 
-
 exports.index = async (req, res, next) => {
 
   const company = await Company.findOne()
