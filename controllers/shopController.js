@@ -41,18 +41,13 @@ exports.shop = async (req, res, next) => {
       const shop = await Shop.findById(req.params.id).populate('menus');
 
       if (!shop) {
-        throw new Error("ไม่พบผู้ใช้งาน");
-      } else {
-        res.status(200).json({
-          data: shop,
-        });
+        const error = new Error('ไม่พบร้านที่ค้นหา')
+          error.statusCode = 400
+          throw error
+        }
       }
-    } catch (error) {
-      res.status(400).json({
-        error: {
-          message: "เกิดข้อผิดพลาด" + error.message,
-        },
-      });
+     catch (error) {
+      next(error)
     }
   };
 

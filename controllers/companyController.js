@@ -11,11 +11,14 @@ exports.show = async (req, res) => {
 
   try {
     const company = await Company.findById(req.params.id)
-    if (!company) throw new Error('ไม่พบข้อมูล')
-    res.send({ data: company })
+    if (!company) {
+      const error = new Error("ไม่พบข้อมูลบริษัท");
+      error.statusCode = 400;
+      throw error;
+  }
   } 
   catch (error) {
-    res.status(404).json({ message: 'error : ' + error.message })
+    next(error)
   }
 }
 
@@ -39,11 +42,14 @@ exports.update = async (req, res) => {
     const { id } = req.params
     const { name, address } = req.body
     const company = await Company.updateOne({ _id: id }, { name, address })
-    if (company.matchedCount === 0) throw new Error('ไม่พบข้อมูล')
-    res.status(200).json({ message: 'แก้ไขข้อมูลเรียบร้อย' })
+    if (company.matchedCount === 0) {
+      const error = new Error('ไม่พบข้อมูล')
+      error.statusCode = 404
+      throw error;
+    }
   } 
   catch (error) {
-    res.status(404).json({ message: 'error : ' + error.message })
+    next(error);
   }
 }
 
@@ -51,11 +57,14 @@ exports.destroy = async (req, res) => {
   try {
     const { id } = req.params
     const company = await Company.deleteOne({ _id: id })
-    if (company.deletedCount === 0) throw new Error('ไม่พบข้อมูล')
-    res.status(200).json({ message: 'ลบข้อมูลเรียบร้อย' })
+    if(company.deletedCount === 0) {
+      const error = new Error("ไม่สามารถลบข้อมูลได้ / ไม่พบข้อมูลผู้ใช้งาน");
+      error.statusCode = 400;
+      throw error;
+    }
   } 
   catch (error) {
-    res.status(404).json({ message: 'error : ' + error.message })
+        next(error);
   }
 }
 
